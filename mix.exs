@@ -7,7 +7,7 @@ defmodule Borscht.MixProject do
 
   def project do
     [
-      app: String.to_atom(@name),
+      app: @name |> String.downcase() |> String.to_atom(),
       name: @name,
       version: @version,
       elixir: "~> 1.3",
@@ -38,7 +38,8 @@ defmodule Borscht.MixProject do
   defp deps do
     [
       {:httpoison, "~> 1.0"},
-      {:jason, "~> 1.0"}
+      {:jason, "~> 1.0"},
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
