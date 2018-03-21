@@ -1,5 +1,7 @@
 # Borscht
-![Borscht logo](assets/logo.png)
+
+<img src="https://cdn.rawgit.com/BlueHotDog/borscht/13b13c94/assets/logo.png" alt="Logo" width=200px/>
+
 A Plugin based exception reporting framework for Elixir.
 Simply use this with your favorite reporting plugin.
 
