@@ -1,5 +1,5 @@
 # Borscht
-
+![Borscht logo](assets/logo.png)
 A Plugin based exception reporting framework for Elixir.
 Simply use this with your favorite reporting plugin.
 
