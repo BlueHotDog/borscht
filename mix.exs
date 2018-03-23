@@ -22,14 +22,16 @@ defmodule Borscht.MixProject do
         main: @name,
         source_ref: "v#{@version}",
         source_url: @github_url
-      ]
+      ],
+      dialyzer: [plt_add_deps: :project]
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      applications: [:httpoison, :logger, :jason],
+      env: env(),
       mod: {Borscht, []}
     ]
   end
@@ -39,7 +41,10 @@ defmodule Borscht.MixProject do
     [
       {:httpoison, "~> 1.0"},
       {:jason, "~> 1.0"},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      # Dev dependencies
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:dialyxir, "~> 0.5.1", only: [:test, :dev]},
+      {:apex, "~> 1.2", only: [:test, :dev]}
     ]
   end
 
@@ -54,6 +59,8 @@ defmodule Borscht.MixProject do
   defp env() do
     [
       enabled: true,
+      environment_name: Mix.env(),
+      exclude_envs: [:dev, :test],
       reporters: [Borscht.Reporter.Console]
     ]
   end

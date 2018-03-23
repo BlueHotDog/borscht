@@ -1,0 +1,2 @@
+- Add a notifier param for each exception so we can know if it crashed
+- Filtration
