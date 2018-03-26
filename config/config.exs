@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :bugsnagx, key: :value
+#     config :borscht, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:bugsnagx, :key)
+#     Application.get_env(:borscht, :key)
 #
 # You can also configure a 3rd-party app:
 #

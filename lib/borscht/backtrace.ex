@@ -3,8 +3,14 @@ defmodule Borscht.Backtrace do
   The Backtrace module contains functions for formatting system stacktraces.
   """
 
-  @type stack_item() :: %{module: module(), function: atom(), (arity: arity() | (args: [term()])),
-           location: [{filename: string()} | {line: pos_integer()}]}
+  @type stack_item() :: %{
+          module: module(),
+          function: atom(),
+          arity: arity(),
+          args: [term],
+          location: [location]
+        }
+  @typep location :: %{filename: String.t(), line: pos_integer()}
   @inspect_opts charlists: :as_lists,
                 limit: 5,
                 printable_limit: 1024,
@@ -20,7 +26,7 @@ defmodule Borscht.Backtrace do
       ...> Borscht.Backtrace.from_stacktrace([stack_item])
       [%{file: nil, number: nil, method: "funky/1", args: [], context: "all"}]
   """
-  @spec from_stacktrace(list(:stack_item)) :: list(map)
+  @spec from_stacktrace(list(stack_item)) :: list(map)
   def from_stacktrace(stacktrace) when is_list(stacktrace) do
     Enum.map(stacktrace, &format_line/1)
   end
@@ -30,8 +36,8 @@ defmodule Borscht.Backtrace do
   end
 
   defp format_line({mod, fun, args, [file: file, line: line]}) do
-    app = Borscht.Config.get_env(:app)
-    filter_args = Borscht.Config.get_env(:filter_args)
+    {:ok, app} = Borscht.Config.get_env(:app)
+    {:ok, filter_args} = Borscht.Config.get_env(:filter_args)
 
     %{
       file: format_file(file),
@@ -57,7 +63,7 @@ defmodule Borscht.Backtrace do
     "#{fun}/#{arity}"
   end
 
-  defp format_args(args, false = _filter) when is_list(args) do
+  defp format_args(args, false) when is_list(args) do
     Enum.map(args, &Kernel.inspect(&1, @inspect_opts))
   end
 

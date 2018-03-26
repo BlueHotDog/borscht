@@ -5,30 +5,30 @@ defmodule Borscht do
 
   use Application
 
-  alias Borscht.{Backtrace, Client, Notice}
+  alias Borscht.{Backtrace, Notice}
 
   def start(_type, _options) do
+    import Supervisor.Spec, warn: false
+
     {:ok, config} = Borscht.Config.read()
 
-    if config[:enabled] do
+    if enabled?(config) do
       :error_logger.add_report_handler(Borscht.Logger)
     end
 
-    Apex.ap(config)
+    opts = [strategy: :rest_for_one, name: __MODULE__]
 
-    children = [
-      # worker(Client, [config])
-    ]
+    enabled_reporters = config[:enabled_reporters]
+    children = for reporter <- enabled_reporters, into: [], do: worker(reporter, [config])
 
-    Supervisor.start_link(children, strategy: :one_for_one)
+    Supervisor.start_link(children, opts)
   end
 
-  @spec notify(Notice.noticeable(), map, list) :: :ok
+  @spec notify(Notice.noticeable(), map, list | nil) :: :ok | {:error, term}
   def notify(exception, metadata \\ %{}, stacktrace \\ nil) do
-    exception |> Notice.new(contextual_metadata(metadata), backtrace(stacktrace))
-
-    :ok
-    # |> Reporter.send_notice()
+    exception
+    |> Notice.new(contextual_metadata(metadata), backtrace(stacktrace))
+    |> Reporter.send_notice()
   end
 
   defp contextual_metadata(%{context: _} = metadata) do
@@ -51,5 +51,9 @@ defmodule Borscht do
 
   defp backtrace(stacktrace) do
     Backtrace.from_stacktrace(stacktrace)
+  end
+
+  defp enabled?(config) do
+    config[:enabled] == true || is_nil(config[:enabled])
   end
 end

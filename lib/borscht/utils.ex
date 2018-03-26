@@ -7,7 +7,7 @@ defmodule Borscht.Utils do
   Internally all modules are prefixed with Elixir. This function removes the
   `Elixir` prefix from the module when it is converted to a string.
   # Example
-      iex> Borscht.Utils.module_to_string(Honeybadger.Utils)
+      iex> Borscht.Utils.module_to_string(Borscht.Utils)
       "Borscht.Utils"
   """
   def module_to_string(module) do

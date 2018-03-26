@@ -76,10 +76,14 @@ defmodule Borscht.Notice do
   end
 
   defp server do
+    {:ok, env_name} = Borscht.Config.get_env(:environment_name)
+    {:ok, hostname} = Borscht.Config.get_env(:hostname)
+    {:ok, project_root} = Borscht.Config.get_env(:project_root)
+
     %{
-      environment_name: Borscht.Config.get_env(:environment_name),
-      hostname: Borscht.Config.get_env(:hostname),
-      project_root: Borscht.Config.get_env(:project_root)
+      environment_name: env_name,
+      hostname: hostname,
+      project_root: project_root
     }
   end
 end

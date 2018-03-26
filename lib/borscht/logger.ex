@@ -63,7 +63,9 @@ defmodule Borscht.Logger do
           error_type = Utils.module_to_string(exception.__struct__)
           reason = Exception.message(exception)
 
-          "Unable to notify Honeybadger! #{error_type}: #{reason}"
+          "General error in Borscht, unable to notify any reporter for error:\t#{error_type}: #{
+            reason
+          }"
         end)
 
         :ok

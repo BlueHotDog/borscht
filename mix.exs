@@ -1,4 +1,4 @@
-defmodule Borscht.MixProject do
+defmodule Borscht.Mixfile do
   use Mix.Project
 
   @version "0.0.1"
@@ -30,7 +30,7 @@ defmodule Borscht.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      applications: [:httpoison, :logger, :jason],
+      applications: [:hackney, :logger, :jason],
       env: env(),
       mod: {Borscht, []}
     ]
@@ -39,12 +39,13 @@ defmodule Borscht.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpoison, "~> 1.0"},
+      {:hackney, "~> 1.11"},
       {:jason, "~> 1.0"},
       # Dev dependencies
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5.1", only: [:test, :dev]},
-      {:apex, "~> 1.2", only: [:test, :dev]}
+      {:apex, "~> 1.2", only: [:test, :dev]},
+      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
     ]
   end
 
@@ -61,7 +62,9 @@ defmodule Borscht.MixProject do
       enabled: true,
       environment_name: Mix.env(),
       exclude_envs: [:dev, :test],
-      reporters: [Borscht.Reporter.Console]
+      reporters: [
+        Borscht.Reporter.Console
+      ]
     ]
   end
 end
