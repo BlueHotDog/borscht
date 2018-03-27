@@ -65,13 +65,12 @@ defmodule Borscht.Config do
     end
 
     config
-    |> Keyword.put_new(:enabled_reporters, enabled_reporters(config))
     |> Keyword.put_new_lazy(:hostname, hostname)
     |> Keyword.put_new_lazy(:project_root, &System.cwd/0)
   end
 
   # TODO: maybe some reporters can be enabled for some environments? idk
-  defp enabled_reporters(config) do
+  def enabled_reporters(config) do
     config[:reporters]
   end
 

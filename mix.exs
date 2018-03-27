@@ -60,10 +60,11 @@ defmodule Borscht.Mixfile do
   defp env() do
     [
       enabled: true,
+      app: nil,
       environment_name: Mix.env(),
       exclude_envs: [:dev, :test],
       reporters: [
-        Borscht.Reporter.Console
+        Borscht.Reporters.Console
       ]
     ]
   end

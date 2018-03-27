@@ -37,12 +37,12 @@ defmodule Borscht.Backtrace do
 
   defp format_line({mod, fun, args, [file: file, line: line]}) do
     {:ok, app} = Borscht.Config.get_env(:app)
-    {:ok, filter_args} = Borscht.Config.get_env(:filter_args)
+    # {:ok, filter_args} = Borscht.Config.get_env(:filter_args)
 
     %{
       file: format_file(file),
       method: format_method(fun, args),
-      args: format_args(args, filter_args),
+      args: format_args(args, false),
       number: line,
       context: app_context(app, Application.get_application(mod))
     }

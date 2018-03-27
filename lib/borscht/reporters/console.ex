@@ -1,4 +1,4 @@
-defmodule Borscht.Reporter.Console do
+defmodule Borscht.Reporters.Console do
   @moduledoc false
   use Borscht.Reporter
 

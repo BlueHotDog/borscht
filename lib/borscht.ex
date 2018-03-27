@@ -7,9 +7,9 @@ defmodule Borscht do
 
   alias Borscht.{Backtrace, Notice}
 
-  def start(_type, _options) do
-    import Supervisor.Spec, warn: false
+  @reporters_registy_name :borscht_reporters
 
+  def start(_type, _options) do
     {:ok, config} = Borscht.Config.read()
 
     if enabled?(config) do
@@ -18,17 +18,21 @@ defmodule Borscht do
 
     opts = [strategy: :rest_for_one, name: __MODULE__]
 
-    enabled_reporters = config[:enabled_reporters]
-    children = for reporter <- enabled_reporters, into: [], do: worker(reporter, [config])
+    enabled_reporters = Borscht.Config.enabled_reporters(config)
 
-    Supervisor.start_link(children, opts)
+    children = for reporter <- enabled_reporters, into: [], do: create_worker(config, reporter)
+
+    children = children ++ [{Registry, [keys: :unique, name: @reporters_registy_name]}]
+    result = Supervisor.start_link(children, opts)
+    register_reporters(enabled_reporters)
+    result
   end
 
   @spec notify(Notice.noticeable(), map, list | nil) :: :ok | {:error, term}
   def notify(exception, metadata \\ %{}, stacktrace \\ nil) do
     exception
     |> Notice.new(contextual_metadata(metadata), backtrace(stacktrace))
-    |> Reporter.send_notice()
+    |> notify_reporters
   end
 
   defp contextual_metadata(%{context: _} = metadata) do
@@ -55,5 +59,24 @@ defmodule Borscht do
 
   defp enabled?(config) do
     config[:enabled] == true || is_nil(config[:enabled])
+  end
+
+  defp notify_reporters(notice) do
+    [{_, reporters}] = Registry.lookup(@reporters_registy_name, "reporters")
+    reporters |> Enum.each(&Borscht.Reporter.report(&1, notice))
+  end
+
+  defp register_reporters(reporters) when is_list(reporters) do
+    {:ok, _} = Registry.register(@reporters_registy_name, "reporters", reporters)
+  end
+
+  defp create_worker(config, %{reporter: reporter, args: args})
+       when is_atom(reporter) do
+    args_with_config = args |> Map.put_new(:config, config)
+    {reporter, [args_with_config]}
+  end
+
+  defp create_worker(config, reporter) when is_atom(reporter) do
+    {reporter, [%{config: config}]}
   end
 end

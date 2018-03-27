@@ -1,4 +1,4 @@
-Logger.remove_backend(:console)
+# Logger.remove_backend(:console)
 
 ExUnit.start(assert_receive_timeout: 1000, refute_receive_timeout: 1000)
 

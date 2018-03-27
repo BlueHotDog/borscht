@@ -37,4 +37,8 @@ defmodule Borscht.Reporter do
   Reports a ```Borscht.Notice``` to the relevant provider
   """
   @callback report(notice) :: {:ok, term} | {:error, term}
+
+  def report(reporter, notice) do
+    reporter.report(notice)
+  end
 end
