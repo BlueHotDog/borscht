@@ -16,6 +16,7 @@ defmodule Borscht.Mixfile do
       consolidate_protocols: Mix.env() != :test,
       package: package(),
       deps: deps(),
+      aliases: aliases(),
       description: "Plugin based exception reporting for elixir.",
       homepage_url: "https://github.com/BlueHotDog/borscht",
       docs: [
@@ -66,6 +67,12 @@ defmodule Borscht.Mixfile do
       reporters: [
         Borscht.Reporters.Console
       ]
+    ]
+  end
+
+  defp aliases do
+    [
+      test: "test --no-start"
     ]
   end
 end

@@ -33,12 +33,22 @@ defmodule Borscht.Reporter do
   @type t :: module
   @type notice :: notice
 
+  defstruct [:reporter, :opts]
+
   @doc """
   Reports a ```Borscht.Notice``` to the relevant provider
   """
   @callback report(notice) :: {:ok, term} | {:error, term}
 
-  def report(reporter, notice) do
+  def report(%Borscht.Reporter{reporter: reporter}, notice) do
     reporter.report(notice)
+  end
+
+  def from_config(reporter) when is_atom(reporter) do
+    %Borscht.Reporter{reporter: reporter, opts: %{}}
+  end
+
+  def from_config(%{reporter: reporter, opts: opts}) when is_atom(reporter) and is_map(opts) do
+    %Borscht.Reporter{reporter: reporter, opts: opts}
   end
 end

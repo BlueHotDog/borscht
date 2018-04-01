@@ -61,10 +61,9 @@ defmodule Borscht.Logger do
       exception ->
         Logger.warn(fn ->
           error_type = Utils.module_to_string(exception.__struct__)
-          reason = Exception.message(exception)
 
           "General error in Borscht, unable to notify any reporter for error:\t#{error_type}: #{
-            reason
+            Kernel.inspect(message)
           }"
         end)
 

@@ -7,7 +7,6 @@ defmodule Borscht.Reporters.Console do
   end
 
   def report(%Borscht.Notice{} = notice) do
-    Apex.ap({"notice", notice})
     {:ok, notice}
   end
 

@@ -5,12 +5,16 @@ defmodule Borscht do
 
   use Application
 
-  alias Borscht.{Backtrace, Notice}
+  alias Borscht.{Backtrace, Notice, Reporter}
 
   @reporters_registy_name :borscht_reporters
 
   def start(_type, _options) do
-    {:ok, config} = Borscht.Config.read()
+    config =
+      case Borscht.Config.read() do
+        {:ok, config} -> config
+        {:error, %Borscht.Config.MissingConfigParams{} = error} -> raise error
+      end
 
     if enabled?(config) do
       :error_logger.add_report_handler(Borscht.Logger)
@@ -18,14 +22,27 @@ defmodule Borscht do
 
     opts = [strategy: :rest_for_one, name: __MODULE__]
 
-    enabled_reporters = Borscht.Config.enabled_reporters(config)
+    enabled_reporters =
+      Borscht.Config.enabled_reporters(config) |> Enum.map(&Reporter.from_config(&1))
 
-    children = for reporter <- enabled_reporters, into: [], do: create_worker(config, reporter)
+    children =
+      for reporter <- enabled_reporters, into: [], do: build_reporter_worker(config, reporter)
 
-    children = children ++ [{Registry, [keys: :unique, name: @reporters_registy_name]}]
+    children = [{Registry, [keys: :unique, name: @reporters_registy_name]}] ++ children
+
     result = Supervisor.start_link(children, opts)
+    {:ok, _} = result
+
     register_reporters(enabled_reporters)
+
     result
+  end
+
+  @doc false
+  def stop(_state) do
+    :error_logger.delete_report_handler(Borscht.Logger)
+
+    :ok
   end
 
   @spec notify(Notice.noticeable(), map, list | nil) :: :ok | {:error, term}
@@ -63,20 +80,15 @@ defmodule Borscht do
 
   defp notify_reporters(notice) do
     [{_, reporters}] = Registry.lookup(@reporters_registy_name, "reporters")
-    reporters |> Enum.each(&Borscht.Reporter.report(&1, notice))
+    reporters |> Enum.each(&Reporter.report(&1, notice))
   end
 
   defp register_reporters(reporters) when is_list(reporters) do
     {:ok, _} = Registry.register(@reporters_registy_name, "reporters", reporters)
   end
 
-  defp create_worker(config, %{reporter: reporter, args: args})
-       when is_atom(reporter) do
-    args_with_config = args |> Map.put_new(:config, config)
-    {reporter, [args_with_config]}
-  end
-
-  defp create_worker(config, reporter) when is_atom(reporter) do
-    {reporter, [%{config: config}]}
+  defp build_reporter_worker(config, %Reporter{} = reporter) do
+    opts_with_config = reporter.opts |> Map.put_new(:config, config)
+    {reporter.reporter, opts_with_config}
   end
 end

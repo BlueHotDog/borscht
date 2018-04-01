@@ -1,22 +1,24 @@
 defmodule Borscht.Config do
-  defmodule MissingEnvironmentNameError do
-    defexception message: """
-                 The environment_name setting is required so that we can report the correct
-                 environment name. Please configure environment_name in your
-                 config.exs and environment specific config files to have accurate reporting
-                 of errors.
-                 config :borscht, :environment_name, :dev
-                 """
+  defmodule MissingConfigParams do
+    defexception [:message]
+
+    def exception(params) do
+      msg = """
+      Missing configuration params: #{inspect(params)}
+      """
+
+      %MissingConfigParams{message: msg}
+    end
   end
 
   @type config :: [config_item]
   @type config_item :: {atom, any}
 
-  @spec read() :: {:ok, config}
+  @spec read() :: {:ok, config} | {:error, term()}
   def read() do
     get_all_env()
     |> put_dynamic_env()
-    |> verify_environment_name!()
+    |> verify()
     |> persist_all_env()
   end
 
@@ -52,7 +54,7 @@ defmodule Borscht.Config do
         {:ok, value}
 
       :error ->
-        {:error, "the configuration parameter #{inspect(key)} is not set"}
+        {:error, "Configuration parameter #{inspect(key)} is not set"}
     end
   end
 
@@ -74,10 +76,15 @@ defmodule Borscht.Config do
     config[:reporters]
   end
 
-  defp verify_environment_name!(config) do
-    case Keyword.get(config, :environment_name) do
-      nil -> {:error, MissingEnvironmentNameError}
-      _ -> {:ok, config}
+  defp verify(config, params \\ [:app]) do
+    invalid_params =
+      params
+      |> Enum.map(&{&1, Keyword.get(config, &1)})
+      |> Enum.filter(&(elem(&1, 1) == nil))
+
+    case length(invalid_params) do
+      x when x == 0 -> {:ok, config}
+      x when x > 0 -> {:error, MissingConfigParams.exception(invalid_params)}
     end
   end
 
@@ -88,4 +95,6 @@ defmodule Borscht.Config do
 
     {:ok, config}
   end
+
+  defp persist_all_env(other), do: other
 end
