@@ -1,0 +1,13 @@
+{application,borscht,
+             [{description,"Plugin based exception reporting for elixir."},
+              {modules,['Elixir.Borscht','Elixir.Borscht.Backtrace',
+                        'Elixir.Borscht.Config',
+                        'Elixir.Borscht.Config.MissingConfigParams',
+                        'Elixir.Borscht.Logger','Elixir.Borscht.Notice',
+                        'Elixir.Borscht.Reporter',
+                        'Elixir.Borscht.Reporters.Console',
+                        'Elixir.Borscht.Utils']},
+              {registered,[]},
+              {vsn,"0.0.1"},
+              {applications,[kernel,stdlib,elixir,hackney,logger,jason]},
+              {mod,{'Elixir.Borscht',[]}}]}.

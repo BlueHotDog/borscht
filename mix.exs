@@ -32,7 +32,6 @@ defmodule Borscht.Mixfile do
   def application do
     [
       applications: [:hackney, :logger, :jason],
-      env: env(),
       mod: {Borscht, []}
     ]
   end
@@ -55,18 +54,6 @@ defmodule Borscht.Mixfile do
       maintainers: ["Danni Friedland"],
       licenses: ["MIT"],
       links: %{"GitHub" => @github_url}
-    ]
-  end
-
-  defp env() do
-    [
-      enabled: true,
-      app: nil,
-      environment_name: Mix.env(),
-      exclude_envs: [:dev, :test],
-      reporters: [
-        Borscht.Reporters.Console
-      ]
     ]
   end
 

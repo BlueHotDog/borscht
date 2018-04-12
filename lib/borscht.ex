@@ -47,6 +47,7 @@ defmodule Borscht do
 
   @spec notify(Notice.noticeable(), map, list | nil) :: :ok | {:error, term}
   def notify(exception, metadata \\ %{}, stacktrace \\ nil) do
+    IO.inspect stacktrace
     exception
     |> Notice.new(contextual_metadata(metadata), backtrace(stacktrace))
     |> notify_reporters

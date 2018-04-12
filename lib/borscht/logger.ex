@@ -13,14 +13,12 @@ defmodule Borscht.Logger do
   end
 
   ## Callbacks
-
   def handle_event({_type, gl, _msg}, state) when node(gl) != node() do
     {:ok, state}
   end
 
   def handle_event(event, state) do
     handle_error(event)
-
     {:ok, state}
   end
 
@@ -49,7 +47,6 @@ defmodule Borscht.Logger do
   defp handle_error({:error_report, _gl, {_pid, _type, [message | _]}}) when is_list(message) do
     try do
       context = get_in(message, [:dictionary, :borscht_context])
-
       case message[:error_info] do
         {_kind, {exception, stacktrace}, _stack} ->
           Borscht.notify(exception, context, stacktrace)
