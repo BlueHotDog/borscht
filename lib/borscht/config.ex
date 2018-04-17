@@ -1,4 +1,7 @@
 defmodule Borscht.Config do
+  @moduledoc """
+  Handles all aspects of reading/writing configuration params.
+  """
   defmodule MissingConfigParams do
     defexception [:message]
 
@@ -76,7 +79,6 @@ defmodule Borscht.Config do
     globally_enabled && env_enabled
   end
 
-  # TODO: maybe some reporters can be enabled for some environments? idk
   def enabled_reporters(config) do
     if enabled?(config) do
       config[:reporters]

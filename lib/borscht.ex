@@ -23,7 +23,9 @@ defmodule Borscht do
     opts = [strategy: :rest_for_one, name: __MODULE__]
 
     enabled_reporters =
-      Borscht.Config.enabled_reporters(config) |> Enum.map(&Reporter.from_config(&1))
+      config
+      |> Borscht.Config.enabled_reporters()
+      |> Enum.map(&Reporter.from_config(&1))
 
     children =
       for reporter <- enabled_reporters, into: [], do: build_reporter_worker(config, reporter)
