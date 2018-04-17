@@ -16,6 +16,13 @@ defmodule Borscht.Mixfile do
       consolidate_protocols: Mix.env() != :test,
       package: package(),
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
       aliases: aliases(),
       description: "Plugin based exception reporting for elixir.",
       homepage_url: "https://github.com/BlueHotDog/borscht",
@@ -45,6 +52,7 @@ defmodule Borscht.Mixfile do
       {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5.1", only: [:test, :dev]},
       {:apex, "~> 1.2", only: [:test, :dev]},
+      {:excoveralls, "~> 0.8", only: :test},
       {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
     ]
   end
