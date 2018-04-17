@@ -1,5 +1,7 @@
 # Borscht
 
+[![Build Status](https://travis-ci.org/BlueHotDog/borscht.svg?branch=master)](https://travis-ci.org/BlueHotDog/borscht)
+
 <img src="https://cdn.rawgit.com/BlueHotDog/borscht/13b13c94/assets/logo.png" alt="Logo" width=200px/>
 
 Plugin based exception tracking for Elixir.

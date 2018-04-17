@@ -43,6 +43,7 @@ defmodule Borscht.Mixfile do
       {:jason, "~> 1.0"},
       # Dev dependencies
       {:ex_doc, ">= 0.0.0", only: :dev},
+      {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5.1", only: [:test, :dev]},
       {:apex, "~> 1.2", only: [:test, :dev]},
       {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
