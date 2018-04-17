@@ -40,7 +40,6 @@ defmodule Borscht.Mixfile do
   defp deps do
     [
       {:hackney, "~> 1.11"},
-      {:jason, "~> 1.0"},
       # Dev dependencies
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
