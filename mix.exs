@@ -38,7 +38,7 @@ defmodule Borscht.Mixfile do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      applications: [:hackney, :logger, :jason],
+      applications: [:hackney, :logger],
       mod: {Borscht, []}
     ]
   end
