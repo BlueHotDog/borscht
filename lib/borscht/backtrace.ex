@@ -24,7 +24,7 @@ defmodule Borscht.Backtrace do
 
       iex> stack_item = {:erlang, :funky, [{:ok, 123}], []}
       ...> Borscht.Backtrace.from_stacktrace([stack_item])
-      [%{file: nil, number: nil, method: "funky/1", args: [], context: "all"}]
+      [%{file: nil, number: nil, method: "funky/1", args: ["{:ok, 123}"], context: "all"}]
   """
   @spec from_stacktrace(list(stack_item)) :: list(map)
   def from_stacktrace(stacktrace) when is_list(stacktrace) do

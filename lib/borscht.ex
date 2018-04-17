@@ -16,7 +16,7 @@ defmodule Borscht do
         {:error, %Borscht.Config.MissingConfigParams{} = error} -> raise error
       end
 
-    if enabled?(config) do
+    if Borscht.Config.enabled?(config) do
       :error_logger.add_report_handler(Borscht.Logger)
     end
 
@@ -47,7 +47,6 @@ defmodule Borscht do
 
   @spec notify(Notice.noticeable(), map, list | nil) :: :ok | {:error, term}
   def notify(exception, metadata \\ %{}, stacktrace \\ nil) do
-    IO.inspect stacktrace
     exception
     |> Notice.new(contextual_metadata(metadata), backtrace(stacktrace))
     |> notify_reporters
@@ -73,10 +72,6 @@ defmodule Borscht do
 
   defp backtrace(stacktrace) do
     Backtrace.from_stacktrace(stacktrace)
-  end
-
-  defp enabled?(config) do
-    config[:enabled] == true || is_nil(config[:enabled])
   end
 
   defp notify_reporters(notice) do

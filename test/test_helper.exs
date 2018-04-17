@@ -39,7 +39,10 @@ defmodule Borscht.Case do
       put_all_env(original)
     end)
 
-    Application.ensure_all_started(:borscht)
+    case Application.ensure_all_started(:borscht) do
+      {:ok, _} -> :ok
+      {:error, error} -> {:error, error}
+    end
   end
 
   def capture_log(fun) do

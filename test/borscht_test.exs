@@ -6,7 +6,8 @@ defmodule BorschtTest do
 
   setup do
     restart_with_config(
-      app: "some app",
+      app: :test_app,
+      exclude_envs: [],
       reporters: [%{reporter: Borscht.TestReporter, opts: %{test: self()}}]
     )
   end
@@ -40,13 +41,37 @@ defmodule BorschtTest do
     assert_receive {:report, _notice}
   end
 
-  test "warn if incomplete env" do
-    try do
+  test "fail to start if missing config param" do
+    {:error, {:borscht, {:bad_return, {_, exit_reason}}}} =
       restart_with_config(app: nil, environment_name: :test, exclude_envs: [])
+
+    assert {:EXIT, {%Elixir.Borscht.Config.MissingConfigParams{}, _}} = exit_reason
+  end
+
+  test "sending a notice on an inactive environment doesn't report" do
+    restart_with_config(exclude_envs: [:test])
+    :ok = Borscht.notify(%RuntimeError{})
+    refute_receive {:report, _notice}
+  end
+
+  test "sending a notice with exception stacktrace" do
+    restart_with_config(exclude_envs: [])
+
+    try do
+      raise RuntimeError
     rescue
-      ex -> Apex.ap(ex)
+      exception ->
+        :ok = Borscht.notify(exception)
     end
 
-    # assert logged =~ ~s|mandatory :borscht config key app not set|
+    assert_receive {:report, %Borscht.Notice{error: %{backtrace: backtrace}}}
+
+    traced = for %{file: file, method: fun} <- backtrace, do: {file, fun}
+
+    refute {"lib/process.ex", "info/1"} in traced
+    refute {"lib/borscht.ex", "backtrace/1"} in traced
+    refute {"lib/borscht.ex", "notify/3"} in traced
+
+    assert {"test/borscht_test.exs", "test sending a notice with exception stacktrace/1"} in traced
   end
 end

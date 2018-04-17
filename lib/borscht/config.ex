@@ -17,6 +17,7 @@ defmodule Borscht.Config do
   @spec read() :: {:ok, config} | {:error, term()}
   def read() do
     get_all_env()
+    |> merge_with_defaults()
     |> put_dynamic_env()
     |> verify()
     |> persist_all_env()
@@ -36,6 +37,16 @@ defmodule Borscht.Config do
       {:ok, val} = get_env(key)
       {key, val}
     end
+  end
+
+  @spec merge_with_defaults(config) :: config
+  def merge_with_defaults(config) do
+    default = [
+      enabled: true,
+      exclude_envs: []
+    ]
+
+    Keyword.merge(default, config)
   end
 
   @doc """
@@ -58,6 +69,22 @@ defmodule Borscht.Config do
     end
   end
 
+  @spec enabled?(config) :: boolean
+  def enabled?(config) do
+    globally_enabled = config[:enabled] == true
+    env_enabled = config[:exclude_envs] |> Enum.find(&(&1 == config[:environment_name])) == nil
+    globally_enabled && env_enabled
+  end
+
+  # TODO: maybe some reporters can be enabled for some environments? idk
+  def enabled_reporters(config) do
+    if enabled?(config) do
+      config[:reporters]
+    else
+      []
+    end
+  end
+
   @spec put_dynamic_env(config) :: config
   defp put_dynamic_env(config) do
     hostname = fn ->
@@ -69,11 +96,6 @@ defmodule Borscht.Config do
     config
     |> Keyword.put_new_lazy(:hostname, hostname)
     |> Keyword.put_new_lazy(:project_root, &System.cwd/0)
-  end
-
-  # TODO: maybe some reporters can be enabled for some environments? idk
-  def enabled_reporters(config) do
-    config[:reporters]
   end
 
   defp verify(config, params \\ [:app]) do

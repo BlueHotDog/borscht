@@ -21,5 +21,4 @@ use Mix.Config
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 #
-
-if Mix.env() == :test, do: import_config("#{Mix.env()}.exs")
+if [:test] |> Enum.member?(Mix.env()), do: import_config("#{Mix.env()}.exs")
