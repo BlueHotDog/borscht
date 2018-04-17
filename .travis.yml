@@ -5,8 +5,8 @@ elixir:
     - 1.5
     - 1.6
 otp_release:
-    - 19
-    - 20
+    - 19.3
+    - 20.3
 
 env:
   global:
