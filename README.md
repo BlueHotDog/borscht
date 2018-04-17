@@ -1,6 +1,7 @@
 # Borscht
 
 [![Build Status](https://travis-ci.org/BlueHotDog/borscht.svg?branch=master)](https://travis-ci.org/BlueHotDog/borscht)
+[![Coverage Status](https://coveralls.io/repos/github/BlueHotDog/borscht/badge.svg?branch=master)](https://coveralls.io/github/BlueHotDog/borscht?branch=master)
 
 <img src="https://cdn.rawgit.com/BlueHotDog/borscht/13b13c94/assets/logo.png" alt="Logo" width=200px/>
 
