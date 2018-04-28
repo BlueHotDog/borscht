@@ -14,6 +14,12 @@ defmodule Borscht.Config do
     end
   end
 
+  @default_config [
+    enabled: true,
+    exclude_environments: [:dev],
+    environment_name: nil
+  ]
+
   @type config :: [config_item]
   @type config_item :: {atom, any}
 
@@ -44,12 +50,7 @@ defmodule Borscht.Config do
 
   @spec merge_with_defaults(config) :: config
   def merge_with_defaults(config) do
-    default = [
-      enabled: true,
-      exclude_envs: []
-    ]
-
-    Keyword.merge(default, config)
+    Keyword.merge(@default_config, config)
   end
 
   @doc """
@@ -77,14 +78,6 @@ defmodule Borscht.Config do
     globally_enabled = config[:enabled] == true
     env_enabled = config[:exclude_envs] |> Enum.find(&(&1 == config[:environment_name])) == nil
     globally_enabled && env_enabled
-  end
-
-  def enabled_reporters(config) do
-    if enabled?(config) do
-      config[:reporters]
-    else
-      []
-    end
   end
 
   @spec put_dynamic_env(config) :: config

@@ -38,7 +38,7 @@ defmodule Borscht.Mixfile do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      applications: [:hackney, :logger],
+      applications: [:logger],
       mod: {Borscht, []}
     ]
   end
@@ -46,7 +46,6 @@ defmodule Borscht.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:hackney, "~> 1.11"},
       # Dev dependencies
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},

@@ -8,7 +8,7 @@ defmodule Borscht.ConfigTest do
     restart_with_config(
       app: :test_app,
       exclude_envs: [],
-      reporters: [%{reporter: Borscht.TestReporter, opts: %{test: self()}}]
+      reporters: []
     )
   end
 

@@ -4,6 +4,7 @@ ExUnit.start(assert_receive_timeout: 1000, refute_receive_timeout: 1000)
 
 defmodule Borscht.Case do
   use ExUnit.CaseTemplate
+  @app_name :borscht
 
   using _ do
     quote do
@@ -11,22 +12,16 @@ defmodule Borscht.Case do
     end
   end
 
-  def with_config(opts, fun) when is_function(fun) do
-    original = take_original_env(opts)
+  def restart_with_config(opts, pid) do
+    default_options = [
+      reporters: [%{reporter: Borscht.TestReporter, opts: %{test_pid: pid}}]
+    ]
 
-    try do
-      put_all_env(opts)
+    opts = Keyword.merge(default_options, opts)
 
-      fun.()
-    after
-      put_all_env(original)
-    end
-  end
-
-  def restart_with_config(opts) do
     :ok =
-      case Application.stop(:borscht) do
-        {:error, {:not_started, :borscht}} -> :ok
+      case Application.stop(@app_name) do
+        {:error, {:not_started, @app_name}} -> :ok
         :ok -> :ok
         other -> other
       end
@@ -39,33 +34,19 @@ defmodule Borscht.Case do
       put_all_env(original)
     end)
 
-    case Application.ensure_all_started(:borscht) do
+    case Application.ensure_all_started(@app_name) do
       {:ok, _} -> :ok
       {:error, error} -> {:error, error}
     end
   end
 
-  def capture_log(fun) do
-    Logger.add_backend(:console, flush: true)
-
-    on_exit(fn ->
-      Logger.remove_backend(:console)
-    end)
-
-    ExUnit.CaptureIO.capture_io(:user, fn ->
-      fun.()
-      :timer.sleep(100)
-      Logger.flush()
-    end)
-  end
-
   defp take_original_env(opts) do
-    Keyword.take(Application.get_all_env(:borscht), Keyword.keys(opts))
+    Keyword.take(Application.get_all_env(@app_name), Keyword.keys(opts))
   end
 
   defp put_all_env(opts) do
     Enum.each(opts, fn {key, val} ->
-      Application.put_env(:borscht, key, val)
+      Application.put_env(@app_name, key, val)
     end)
   end
 end
@@ -85,8 +66,9 @@ defmodule Borscht.TestReporter do
     {:ok, state}
   end
 
-  def handle_call({:report, notice}, _from, %{test: test} = state) do
-    send(test, {:report, notice})
+  def handle_call({:report, notice}, _from, %{test_pid: pid} = state) do
+    Apex.ap(pid)
+    send(pid, {:report, notice})
     {:reply, {:ok, nil}, state}
   end
 end
